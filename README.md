@@ -19,4 +19,4 @@ Code for each puzzle can be found in separate module files. The day 1, puzzle 1 
 
 Puzzle input files are stored in the `input` sub-directory and are named like `day-1-puzzle-1`.
 
-For each puzzle, there is a `process_input` function in the respective module that will read the input file and output the puzzle answer.
+For each puzzle, there is a `process_input` function in the respective module that will read the input file and output the puzzle answer. Some puzzles might have a function like `output_answer` instead.
