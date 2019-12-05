@@ -41,18 +41,7 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
 
 
   def process_input() do
-    {:ok, input} = File.read("input/day-2-puzzle-1")
-
-    input
-    |> String.trim_trailing() # Trim, e.g. newline, character(s)
-    |> String.split(",")
-    |> Enum.map(&String.to_integer/1)
-    |> List.replace_at(1, 12) # Per explicit puzzle instruction
-    |> List.replace_at(2, 2 ) # Per explicit puzzle instruction
-    |> run()
-    |> Enum.at(0)
+    AdventOfCode2019.Day2Puzzle2.process_input(12, 2)
   end
-
-
 
 end
