@@ -5,14 +5,17 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   @type position          :: {integer, integer}
   @type direction         :: :up | :down | :left | :right
   @type wire_number       :: non_neg_integer
-  @type wire_length_item  :: {:wire_length, wire_number, direction}
-  @type wire_bend_item    :: {:wire_bend, wire_number}
+  @type step              :: pos_integer
+  @type wire_length_item  :: {:wire_length, wire_number, step, direction}
+  @type wire_bend_item    :: {:wire_bend, wire_number, step}
   @type intersection_item :: :intersection
-  @type panel_item        :: :central_port | wire_length_item | wire_bend_item | intersection_item
+  @type wire_item         :: wire_length_item | wire_bend_item
+  @type wire_items        :: [wire_item]
+  @type panel_item        :: :central_port | wire_item | wire_items | intersection_item
   @type panel_items       :: %{required(position) => panel_item}
   @type intersections     :: [position]
 
-  @type panel             ::
+  @type panel ::
   %{
     items: panel_items,
     wires_count: non_neg_integer,
@@ -65,17 +68,17 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
     for y <- (max_y + 1)..(min_y - 1) do
       for x <- (min_x - 1)..(max_x + 1) do
         case Map.get(panel_items, {x, y}) do
-          :central_port             -> "o"
-          :intersection             -> "X"
+          :central_port                -> "o"
+          :intersection                -> "X"
 
-          {:wire_length, _, :up}    -> "|"
-          {:wire_length, _, :down}  -> "|"
-          {:wire_length, _, :left}  -> "-"
-          {:wire_length, _, :right} -> "-"
+          {:wire_length, _, _, :up}    -> "|"
+          {:wire_length, _, _, :down}  -> "|"
+          {:wire_length, _, _, :left}  -> "-"
+          {:wire_length, _, _, :right} -> "-"
 
-          {:wire_bend, _}           -> "+"
-          nil                       -> "."
-          _                         -> raise("Encountered an unknown point type; something went wrong.")
+          {:wire_bend, _, _}           -> "+"
+          nil                          -> "."
+          _                            -> raise("Encountered an unknown point type; something went wrong.")
         end
       end
       |> List.to_string()
@@ -121,6 +124,7 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
     add_wire(
       panel,
       panel.wires_count + 1,
+      1,
       @central_port_position,
       wire
     )
@@ -141,8 +145,8 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   def update_panel_position(panel, position, item) do
     item_wire_number =
       case item do
-        {:wire_length, wire_number, _direction} -> wire_number
-        {:wire_bend, wire_number}               -> wire_number
+        {:wire_length, wire_number, _step, _direction} -> wire_number
+        {:wire_bend, wire_number, _step}               -> wire_number
       end
 
     item_key = [:items, position]
@@ -150,8 +154,9 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
     new_item =
       case get_in(panel, item_key) do
         :central_port -> :central_port
-        {:wire_length, wire_number, _direction} ->
+        {:wire_length, wire_number, _step, _direction} ->
           if item_wire_number == wire_number, do: item, else: :intersection
+        # TODO: Handle wire bend.
         nil -> item
       end
 
@@ -173,8 +178,17 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   end
 
 
-  @spec add_wire_segment(panel, wire_number, position, direction, panel_item, wire) :: panel
-  def add_wire_segment(panel, wire_number, current_position, direction, item, wire_rest) do
+  @spec add_wire_segment(panel, wire_number, step, position, direction, panel_item, wire) :: panel
+  def add_wire_segment(
+    panel,
+    wire_number,
+    current_step,
+    current_position,
+    direction,
+    item,
+    wire_rest
+  ) do
+
     new_position = new_position(current_position, direction)
 
     update_panel_position(
@@ -182,52 +196,60 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
       new_position,
       item
     )
-    |> add_wire(wire_number, new_position, wire_rest)
+    |> add_wire(
+      wire_number,
+      current_step + 1,
+      new_position,
+      wire_rest
+    )
   end
 
 
 
-  @spec add_wire(panel, wire_number, position, wire) :: panel
-  def add_wire(panel, wire_number, current_position, wire)
+  @spec add_wire(panel, wire_number, step, position, wire) :: panel
+  def add_wire(panel, wire_number, current_step, current_position, wire)
 
 
   # Handle the last wire path movement:
 
   # Handle the end of the last wire path movement:
-  def add_wire(panel, wire_number, _current_position, [{_direction, 0}]) do
+  def add_wire(panel, wire_number, _current_step, _current_position, [{_direction, 0}]) do
     Map.put(panel, :wires_count, wire_number)
   end
 
-  def add_wire(panel, wire_number, current_position, [{direction, distance}]) do
+  def add_wire(panel, wire_number, current_step, current_position, [{direction, distance}]) do
     add_wire_segment(
       panel,
       wire_number,
+      current_step,
       current_position,
       direction,
-      {:wire_length, wire_number, direction},
+      {:wire_length, wire_number, current_step, direction},
       [{direction, distance - 1}]
     )
   end
 
   # Handle the end of the current (and not-last) wire path movement:
-  def add_wire(panel, wire_number, current_position, [{direction, 1} | wire_tail]) do
+  def add_wire(panel, wire_number, current_step, current_position, [{direction, 1} | wire_tail]) do
     add_wire_segment(
       panel,
       wire_number,
+      current_step,
       current_position,
       direction,
-      {:wire_bend, wire_number},
+      {:wire_bend, wire_number, current_step},
       wire_tail
     )
   end
 
-  def add_wire(panel, wire_number, current_position, [{direction, distance} | wire_tail]) do
+  def add_wire(panel, wire_number, current_step, current_position, [{direction, distance} | wire_tail]) do
     add_wire_segment(
       panel,
       wire_number,
+      current_step,
       current_position,
       direction,
-      {:wire_length, wire_number, direction},
+      {:wire_length, wire_number, current_step, direction},
       [{direction, distance - 1} | wire_tail]
     )
   end

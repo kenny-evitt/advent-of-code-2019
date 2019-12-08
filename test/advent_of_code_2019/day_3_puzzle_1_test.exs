@@ -86,7 +86,7 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
     expected_panel = %{
       items: %{
         {0, 0} => :central_port,
-        {1, 0} => {:wire_length, 1, :right}
+        {1, 0} => {:wire_length, 1, 1, :right}
       },
       wires_count: 1,
       intersections: []
@@ -103,14 +103,14 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
       items: %{
         {0, 0} => :central_port,
 
-        {1, 0} => {:wire_length, 1, :right},
-        {2, 0} => {:wire_length, 1, :right},
-        {3, 0} => {:wire_length, 1, :right},
-        {4, 0} => {:wire_length, 1, :right},
-        {5, 0} => {:wire_length, 1, :right},
-        {6, 0} => {:wire_length, 1, :right},
-        {7, 0} => {:wire_length, 1, :right},
-        {8, 0} => {:wire_length, 1, :right}
+        {1, 0} => {:wire_length, 1, 1, :right},
+        {2, 0} => {:wire_length, 1, 2, :right},
+        {3, 0} => {:wire_length, 1, 3, :right},
+        {4, 0} => {:wire_length, 1, 4, :right},
+        {5, 0} => {:wire_length, 1, 5, :right},
+        {6, 0} => {:wire_length, 1, 6, :right},
+        {7, 0} => {:wire_length, 1, 7, :right},
+        {8, 0} => {:wire_length, 1, 8, :right}
       },
       wires_count: 1,
       intersections: []
@@ -129,33 +129,68 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
         {0, 0} => :central_port,
 
 
-        {1, 0} => {:wire_length, 1, :right},
-        {2, 0} => {:wire_length, 1, :right},
-        {3, 0} => {:wire_length, 1, :right},
-        {4, 0} => {:wire_length, 1, :right},
-        {5, 0} => {:wire_length, 1, :right},
-        {6, 0} => {:wire_length, 1, :right},
-        {7, 0} => {:wire_length, 1, :right},
+        {1, 0} => {:wire_length, 1,  1, :right},
+        {2, 0} => {:wire_length, 1,  2, :right},
+        {3, 0} => {:wire_length, 1,  3, :right},
+        {4, 0} => {:wire_length, 1,  4, :right},
+        {5, 0} => {:wire_length, 1,  5, :right},
+        {6, 0} => {:wire_length, 1,  6, :right},
+        {7, 0} => {:wire_length, 1,  7, :right},
 
-        {8, 0} => {:wire_bend, 1},
+        {8, 0} => {:wire_bend,   1,  8},
 
-        {8, 1} => {:wire_length, 1, :up},
-        {8, 2} => {:wire_length, 1, :up},
-        {8, 3} => {:wire_length, 1, :up},
-        {8, 4} => {:wire_length, 1, :up},
+        {8, 1} => {:wire_length, 1,  9, :up},
+        {8, 2} => {:wire_length, 1, 10, :up},
+        {8, 3} => {:wire_length, 1, 11, :up},
+        {8, 4} => {:wire_length, 1, 12, :up},
 
-        {8, 5} => {:wire_bend, 1},
+        {8, 5} => {:wire_bend,   1, 13},
 
-        {7, 5} => {:wire_length, 1, :left},
-        {6, 5} => {:wire_length, 1, :left},
-        {5, 5} => {:wire_length, 1, :left},
-        {4, 5} => {:wire_length, 1, :left},
+        {7, 5} => {:wire_length, 1, 14, :left},
+        {6, 5} => {:wire_length, 1, 15, :left},
+        {5, 5} => {:wire_length, 1, 16, :left},
+        {4, 5} => {:wire_length, 1, 17, :left},
 
-        {3, 5} => {:wire_bend, 1},
+        {3, 5} => {:wire_bend,   1, 18},
 
-        {3, 4} => {:wire_length, 1, :down},
-        {3, 3} => {:wire_length, 1, :down},
-        {3, 2} => {:wire_length, 1, :down}
+        {3, 4} => {:wire_length, 1, 19, :down},
+        {3, 3} => {:wire_length, 1, 20, :down},
+        {3, 2} => {:wire_length, 1, 21, :down}
+      },
+      wires_count: 1,
+      intersections: []
+    }
+
+    assert add_wire(new_front_panel(), wire) == expected_panel
+  end
+
+
+
+  test "add wire to panel example 2" do
+    wire = [{:right, 4}, {:up, 2}, {:left, 2}, {:down, 3}]
+
+    expected_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+
+        {1,  0} => {:wire_length, 1,  1, :right},
+       #{2,  0} => {:wire_length, 1,  2, :right},
+        {3,  0} => {:wire_length, 1,  3, :right},
+
+        {4,  0} => {:wire_bend,   1,  4},
+
+        {4,  1} => {:wire_length, 1,  5, :up},
+
+        {4,  2} => {:wire_bend,   1,  6},
+
+        {3,  2} => {:wire_length, 1,  7, :left},
+
+        {2,  2} => {:wire_bend,   1,  8},
+
+        {2,  1} => {:wire_length, 1,  9, :down},
+        {2,  0} => {:wire_length, 1, 10, :down},
+        {2, -1} => {:wire_length, 1, 11, :down},
       },
       wires_count: 1,
       intersections: []
