@@ -2,6 +2,7 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
   use ExUnit.Case
   use ExUnit.Parameterized
   import AdventOfCode2019.Day3Puzzle1
+  import ExUnit.CaptureIO
 
 
   test "draw front panel with central port only" do
@@ -13,6 +14,50 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
       ]
 
     assert draw_front_panel(new_front_panel()) == expected_drawing
+  end
+
+
+  test "show new front panel drawing" do
+    drawing = draw_front_panel(new_front_panel())
+
+    expected_io =
+      """
+      ...
+      .o.
+      ...
+      """
+
+    assert capture_io(fn -> show(drawing) end) == expected_io
+  end
+
+
+  test "show front panel drawing example 1" do
+    raw_wires =
+      [
+        "R8,U5,L5,D3",
+        "U7,R6,D4,L4"
+      ]
+
+    drawing =
+      draw_front_panel(
+        new_front_panel(raw_wires)
+      )
+
+    expected_io =
+      """
+      ...........
+      .+-----+...
+      .|.....|...
+      .|..+--X-+.
+      .|..|..|.|.
+      .|.-X--+.|.
+      .|..|....|.
+      .|.......|.
+      .o-------+.
+      ...........
+      """
+
+    assert capture_io(fn -> show(drawing) end) == expected_io
   end
 
 
