@@ -8,12 +8,12 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   @type step              :: pos_integer
   @type wire_length_item  :: {:wire_length, wire_number, step, direction}
   @type wire_bend_item    :: {:wire_bend, wire_number, step}
-  @type intersection_item :: :intersection
   @type wire_item         :: wire_length_item | wire_bend_item
   @type wire_items        :: [wire_item]
+  @type intersection_item :: {:intersection, wire_items}
   @type panel_item        :: :central_port | wire_item | wire_items | intersection_item
   @type panel_items       :: %{required(position) => panel_item}
-  @type intersections     :: [position]
+  @type intersections     :: %{required(position) => wire_items}
 
   @type panel ::
   %{
@@ -29,7 +29,7 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
         @central_port_position => :central_port
       },
       wires_count: 0,
-      intersections: []
+      intersections: %{}
     }
   end
 
@@ -46,6 +46,36 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
       end
     )
   end
+
+
+
+  @spec draw_front_panel_item(panel_item) :: String.t
+  def draw_front_panel_item(item)
+
+
+  def draw_front_panel_item(item) when not is_list(item) do
+    case item do
+      :central_port                -> "o"
+      {:intersection, _}           -> "X"
+
+      {:wire_length, _, _, :up}    -> "|"
+      {:wire_length, _, _, :down}  -> "|"
+      {:wire_length, _, _, :left}  -> "-"
+      {:wire_length, _, _, :right} -> "-"
+
+      {:wire_bend, _, _}           -> "+"
+      nil                          -> "."
+      _                            -> raise("Encountered an unknown point type; something went wrong.")
+    end
+  end
+
+
+  def draw_front_panel_item(wire_items) when is_list(wire_items) do
+    draw_front_panel_item(
+      hd(wire_items)
+    )
+  end
+
 
 
   @spec draw_front_panel(panel) :: [String.t]
@@ -67,19 +97,9 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
 
     for y <- (max_y + 1)..(min_y - 1) do
       for x <- (min_x - 1)..(max_x + 1) do
-        case Map.get(panel_items, {x, y}) do
-          :central_port                -> "o"
-          :intersection                -> "X"
-
-          {:wire_length, _, _, :up}    -> "|"
-          {:wire_length, _, _, :down}  -> "|"
-          {:wire_length, _, _, :left}  -> "-"
-          {:wire_length, _, _, :right} -> "-"
-
-          {:wire_bend, _, _}           -> "+"
-          nil                          -> "."
-          _                            -> raise("Encountered an unknown point type; something went wrong.")
-        end
+        draw_front_panel_item(
+          Map.get(panel_items, {x, y})
+        )
       end
       |> List.to_string()
     end
@@ -141,40 +161,82 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   end
 
 
-  @spec update_panel_position(panel, position, panel_item) :: panel
-  def update_panel_position(panel, position, item) do
-    item_wire_number =
-      case item do
-        {:wire_length, wire_number, _step, _direction} -> wire_number
-        {:wire_bend, wire_number, _step}               -> wire_number
+  @spec maybe_update_panel_intersections(
+    panel,
+    position,
+    wire_item | wire_items | intersection_item
+  ) :: panel
+  def maybe_update_panel_intersections(panel, position, item) do
+    case item do
+      {:intersection, wire_items} ->
+        put_in(
+          panel,
+          [:intersections, position],
+          wire_items
+        )
+
+      _ -> panel
+    end
+  end
+
+
+  @spec wire_number(wire_item | wire_items) :: wire_number
+  def wire_number(item)
+
+  def wire_number(item) when not is_list(item) do
+    case item do
+      {:wire_length, wire_number, _step, _direction} -> wire_number
+      {:wire_bend, wire_number, _step}               -> wire_number
+    end
+  end
+
+  def wire_number(wire_items) when is_list(wire_items) do
+    wire_number(
+      hd(wire_items)
+    )
+  end
+
+
+
+  @spec combine_items(wire_item | wire_items, wire_item) :: wire_item | wire_items | intersection_item
+  def combine_items(existing_item, new_item)
+
+  def combine_items({:intersection, intersection_items}, new_item) do
+    {:intersection, [new_item | intersection_items]}
+  end
+
+
+  def combine_items(existing_item, new_item) do
+    items =
+      if is_list(existing_item) do
+        [new_item | existing_item]
+      else
+        [new_item, existing_item]
       end
 
+    if wire_number(new_item) == wire_number(existing_item) do
+      items
+    else
+      {:intersection, items}
+    end
+  end
+
+
+
+  @spec update_panel_position(panel, position, panel_item) :: panel
+  def update_panel_position(panel, position, item) do
     item_key = [:items, position]
 
     new_item =
       case get_in(panel, item_key) do
         :central_port -> :central_port
-        {:wire_length, wire_number, _step, _direction} ->
-          if item_wire_number == wire_number, do: item, else: :intersection
-        # TODO: Handle wire bend.
-        nil -> item
+        nil           -> item
+        existing_item -> combine_items(existing_item, item)
       end
 
     panel
     |> put_in(item_key, new_item)
-    |> Map.update(
-      :intersections,
-      case new_item do
-        :intersection -> [position]
-        _             -> []
-      end,
-      fn intersections ->
-        case new_item do
-          :intersection -> [position | intersections]
-          _             -> intersections
-        end
-      end
-    )
+    |> maybe_update_panel_intersections(position, new_item)
   end
 
 
@@ -191,11 +253,7 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
 
     new_position = new_position(current_position, direction)
 
-    update_panel_position(
-      panel,
-      new_position,
-      item
-    )
+    update_panel_position(panel, new_position, item)
     |> add_wire(
       wire_number,
       current_step + 1,
@@ -282,15 +340,15 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   def intersection_closest_to_central_port(panel) do
     panel.intersections
     |> Enum.map(
-      fn intersection ->
+      fn {position, _wire_items} ->
         {
-          intersection, 
-          manhattan_distance(@central_port_position, intersection)
+          position,
+          manhattan_distance(@central_port_position, position)
         }
       end
     )
     |> Enum.min_by(
-      fn {_intersection, distance} -> distance end,
+      fn {_position, distance} -> distance end,
       fn -> :no_intersections end
     )
   end
@@ -310,9 +368,9 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
     |> intersection_closest_to_central_port()
   end
 
-
   def output_answer() do
     {_intersection, distance} = process_input()
     distance
   end
+
 end

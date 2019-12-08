@@ -89,7 +89,7 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
         {1, 0} => {:wire_length, 1, 1, :right}
       },
       wires_count: 1,
-      intersections: []
+      intersections: %{}
     }
 
     assert add_wire(new_front_panel(), wire) == expected_panel
@@ -113,7 +113,7 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
         {8, 0} => {:wire_length, 1, 8, :right}
       },
       wires_count: 1,
-      intersections: []
+      intersections: %{}
     }
 
     assert add_wire(new_front_panel(), wire) == expected_panel
@@ -158,7 +158,7 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
         {3, 2} => {:wire_length, 1, 21, :down}
       },
       wires_count: 1,
-      intersections: []
+      intersections: %{}
     }
 
     assert add_wire(new_front_panel(), wire) == expected_panel
@@ -171,7 +171,7 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
 
     expected_panel = %{
       items: %{
-        {0, 0} => :central_port,
+        {0,  0} => :central_port,
 
 
         {1,  0} => {:wire_length, 1,  1, :right},
@@ -189,14 +189,61 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
         {2,  2} => {:wire_bend,   1,  8},
 
         {2,  1} => {:wire_length, 1,  9, :down},
-        {2,  0} => {:wire_length, 1, 10, :down},
+       #{2,  0} => {:wire_length, 1, 10, :down},
         {2, -1} => {:wire_length, 1, 11, :down},
+
+        # Self-intersection:
+        {2,  0} => [
+                   {:wire_length, 1, 10, :down},
+                   {:wire_length, 1,  2, :right}
+        ]
       },
       wires_count: 1,
-      intersections: []
+      intersections: %{}
     }
 
     assert add_wire(new_front_panel(), wire) == expected_panel
+  end
+
+
+
+  test "add two wires to panel example 1" do
+    wire1 = [{:right, 1}]
+    wire2 = [{:up, 1}, {:right, 1}, {:down, 1}]
+
+    expected_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+
+       #{1, 0} => {:wire_length, 1, 1, :right},
+
+
+        {0, 1} => {:wire_bend,   2, 1},
+        {1, 1} => {:wire_bend,   2, 2},
+
+
+        {1, 0} => {:intersection, [
+                  {:wire_length, 2, 3, :down},
+                  {:wire_length, 1, 1, :right}
+          ]
+        }
+      },
+      wires_count: 2,
+      intersections: %{
+        {1, 0} => [
+          {:wire_length, 2, 3, :down},
+          {:wire_length, 1, 1, :right}
+        ]
+      }
+    }
+
+    actual_panel =
+      new_front_panel()
+      |> add_wire(wire1)
+      |> add_wire(wire2)
+
+    assert actual_panel == expected_panel
   end
 
 
@@ -298,4 +345,293 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
         }
       ]
   end
+
+
+
+  test "update panel position with wire self-intersection" do
+    initial_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+
+        {1, 0} => {:wire_length, 1,  1, :right},
+        {2, 0} => {:wire_length, 1,  2, :right},
+        {3, 0} => {:wire_length, 1,  3, :right},
+
+        {4, 0} => {:wire_bend,   1,  4},
+
+        {4, 1} => {:wire_length, 1,  5, :up},
+
+        {4, 2} => {:wire_bend,   1,  6},
+
+        {3, 2} => {:wire_length, 1,  7, :left},
+
+        {2, 2} => {:wire_bend,   1,  8},
+
+        {2, 1} => {:wire_length, 1,  9, :down}
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    position = {2, 0}
+    item = {:wire_length, 1, 10, :down}
+
+    expected_updated_panel = %{
+      items: %{
+        {0,  0} => :central_port,
+
+
+        {1,  0} => {:wire_length, 1,  1, :right},
+       #{2,  0} => {:wire_length, 1,  2, :right},
+        {3,  0} => {:wire_length, 1,  3, :right},
+
+        {4,  0} => {:wire_bend,   1,  4},
+
+        {4,  1} => {:wire_length, 1,  5, :up},
+
+        {4,  2} => {:wire_bend,   1,  6},
+
+        {3,  2} => {:wire_length, 1,  7, :left},
+
+        {2,  2} => {:wire_bend,   1,  8},
+
+        {2,  1} => {:wire_length, 1,  9, :down},
+       #{2,  0} => {:wire_length, 1, 10, :down},
+
+        # Self-intersection:
+        {2,  0} => [
+                   {:wire_length, 1, 10, :down},
+                   {:wire_length, 1,  2, :right}
+        ]
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    actual_updated_panel = update_panel_position(initial_panel, position, item)
+    assert actual_updated_panel == expected_updated_panel
+  end
+
+
+  test "update panel position with an existing wire bend" do
+    initial_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+        {1, 0} => {:wire_bend, 1, 1},
+        {1, 1} => {:wire_bend, 1, 2},
+        {2, 1} => {:wire_bend, 1, 3},
+        {2, 0} => {:wire_bend, 1, 4}
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    position = {1, 0}
+    item = {:wire_length, 1, 5, :left}
+
+    expected_updated_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+       #{1, 0} => {:wire_bend, 1, 1},
+        {1, 1} => {:wire_bend, 1, 2},
+        {2, 1} => {:wire_bend, 1, 3},
+        {2, 0} => {:wire_bend, 1, 4},
+
+        # Self-intersection:
+        {1,  0} => [
+                  item,
+                  {:wire_bend, 1, 1}
+        ]
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    actual_updated_panel = update_panel_position(initial_panel, position, item)
+    assert actual_updated_panel == expected_updated_panel
+  end
+
+
+  test "update panel position with an existing list of wire items" do
+    initial_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+       #{1, 0} => {:wire_bend, 1, 1},
+        {1, 1} => {:wire_bend, 1, 2},
+        {2, 1} => {:wire_bend, 1, 3},
+        {2, 0} => {:wire_bend, 1, 4},
+       #{1, 0} => {:wire_bend, 1, 5},
+
+        # Self-intersection:
+        {1,  0} => [
+                  {:wire_bend, 1, 5},
+                  {:wire_bend, 1, 1}
+        ]
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    position = {1, 0}
+    item = {:wire_length, 1, 6, :up}
+
+    expected_updated_panel = %{
+      items: %{
+        {0, 0} => :central_port,
+
+       #{1, 0} => {:wire_bend,   1, 1},
+        {1, 1} => {:wire_bend,   1, 2},
+        {2, 1} => {:wire_bend,   1, 3},
+        {2, 0} => {:wire_bend,   1, 4},
+       #{1, 0} => {:wire_bend,   1, 5},
+       #{1, 0} => {:wire_length, 1, 6, :up},
+
+        # Self-intersection:
+        {1,  0} => [
+                  {:wire_length, 1, 6, :up},
+                  {:wire_bend,   1, 5},
+                  {:wire_bend,   1, 1}
+        ]
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    actual_updated_panel = update_panel_position(initial_panel, position, item)
+    assert actual_updated_panel == expected_updated_panel
+  end
+
+
+  test "update panel position with an existing intersection" do
+    initial_panel = %{
+      items: %{
+        {0,  0} => :central_port,
+
+       #{1,  0} => {:wire_length, 1, 1, :right},
+
+        {0,  1} => {:wire_bend,   2, 1},
+        {1,  1} => {:wire_bend,   2, 2},
+       #{1,  0} => {:wire_length, 2, 3, :down},
+        {1, -1} => {:wire_bend,   2, 4},
+        {2, -1} => {:wire_bend,   2, 5},
+        {2,  0} => {:wire_bend,   2, 6},
+
+        {1,  0} => {:intersection, [
+                   {:wire_length, 2, 3, :down},
+                   {:wire_length, 1, 1, :right}
+          ]
+        }
+      },
+      wires_count: 2,
+      intersections: %{
+        {1, 0} => [
+          {:wire_length, 2, 3, :down},
+          {:wire_length, 1, 1, :right}
+        ]
+      }
+    }
+
+    position = {1, 0}
+    item = {:wire_length, 2, 7, :left}
+
+    expected_updated_panel = %{
+      items: %{
+        {0,  0} => :central_port,
+
+       #{1,  0} => {:wire_length, 1, 1, :right},
+
+        {0,  1} => {:wire_bend,   2, 1},
+        {1,  1} => {:wire_bend,   2, 2},
+       #{1,  0} => {:wire_length, 2, 3, :down},
+        {1, -1} => {:wire_bend,   2, 4},
+        {2, -1} => {:wire_bend,   2, 5},
+        {2,  0} => {:wire_bend,   2, 6},
+       #{1,  0} => {:wire_length, 2, 7, :left}
+
+        {1,  0} => {:intersection, [
+                   item,
+                   {:wire_length, 2, 3, :down},
+                   {:wire_length, 1, 1, :right}
+          ]
+        }
+      },
+      wires_count: 2,
+      intersections: %{
+        {1, 0} => [
+          item,
+          {:wire_length, 2, 3, :down},
+          {:wire_length, 1, 1, :right}
+        ]
+      }
+    }
+
+    actual_updated_panel = update_panel_position(initial_panel, position, item)
+    assert actual_updated_panel == expected_updated_panel
+  end
+
+
+  test "update panel position with an intersecting item for an existing list of wire items" do
+    initial_panel = %{
+      items: %{
+        {0,  0} => :central_port,
+
+        {0,  1} => {:wire_bend,   1, 1},
+        {1,  1} => {:wire_bend,   1, 2},
+       #{1,  0} => {:wire_length, 1, 3, :down},
+        {1, -1} => {:wire_bend,   1, 4},
+        {2, -1} => {:wire_bend,   1, 5},
+        {2,  0} => {:wire_bend,   1, 6},
+       #{1,  0} => {:wire_length, 1, 7, :left}
+
+        # Self-intersection:
+        {1,  0} => [
+                   {:wire_length, 1, 7, :left},
+                   {:wire_length, 1, 3, :down}
+        ]
+      },
+      wires_count: 1,
+      intersections: %{}
+    }
+
+    position = {1, 0}
+    item = {:wire_length, 2, 1, :right}
+
+    expected_updated_panel = %{
+      items: %{
+        {0,  0} => :central_port,
+
+        {0,  1} => {:wire_bend,   1, 1},
+        {1,  1} => {:wire_bend,   1, 2},
+       #{1,  0} => {:wire_length, 1, 3, :down},
+        {1, -1} => {:wire_bend,   1, 4},
+        {2, -1} => {:wire_bend,   1, 5},
+        {2,  0} => {:wire_bend,   1, 6},
+       #{1,  0} => {:wire_length, 1, 7, :left}
+
+        {1,  0} => {:intersection, [
+                   item,
+                   {:wire_length, 1, 7, :left},
+                   {:wire_length, 1, 3, :down}
+          ]
+        }
+      },
+      wires_count: 1, # `update_panel_position` doesn't update this.
+      intersections: %{
+        {1, 0} => [
+          item,
+          {:wire_length, 1, 7, :left},
+          {:wire_length, 1, 3, :down}
+        ]
+      }
+    }
+
+    actual_updated_panel = update_panel_position(initial_panel, position, item)
+    assert actual_updated_panel == expected_updated_panel
+  end
+
+
 end
