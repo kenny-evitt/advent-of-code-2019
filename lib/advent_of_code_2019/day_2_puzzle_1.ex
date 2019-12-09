@@ -1,13 +1,24 @@
 defmodule AdventOfCode2019.Day2Puzzle1 do
 
+  @type value   :: integer
+  @type program :: [value]
+
+  @spec run(program) :: program
   def run(program) do
     run(program, 0)
   end
 
+  @spec run(program, non_neg_integer) :: program
   defp run(program, current_opcode_index) do
     run(program, current_opcode_index, Enum.at(program, current_opcode_index))
   end
 
+  @type opcode :: pos_integer
+
+
+
+  @spec run(program, non_neg_integer, opcode) :: program
+  defp run(program, current_opcode_index, opcode)
 
 
   defp run(program, _current_opcode_index, 99) do
@@ -40,6 +51,7 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
 
 
 
+  @spec process_input() :: value
   def process_input() do
     AdventOfCode2019.Day2Puzzle2.process_input(12, 2)
   end
