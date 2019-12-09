@@ -48,7 +48,11 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
 
     program
     |> List.replace_at(result_index, computed_value)
-    |> run(inputs, outputs, current_opcode_index + 4)
+    |> run(
+      inputs,
+      outputs,
+      current_opcode_index + 4
+    )
   end
 
 
