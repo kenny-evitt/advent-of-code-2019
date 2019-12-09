@@ -56,6 +56,32 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
+  defp run(program, [input | inputs_tail], outputs, current_opcode_index, 3) do
+    result_index = Enum.at(program, current_opcode_index + 1)
+
+    program
+    |> List.replace_at(result_index, input)
+    |> run(
+      inputs_tail,
+      outputs,
+      current_opcode_index + 2
+    )
+  end
+
+
+  defp run(program, inputs, outputs, current_opcode_index, 4) do
+    arg_index = Enum.at(program, current_opcode_index + 1)
+    arg_value = Enum.at(program, arg_index)
+
+    run(
+      program,
+      inputs,
+      [arg_value | outputs],
+      current_opcode_index + 2
+    )
+  end
+
+
   defp run(_program, _inputs, _outputs, _current_opcode_index, _current_opcode) do
     raise("Encountered an unknown opcode; something went wrong.")
   end
