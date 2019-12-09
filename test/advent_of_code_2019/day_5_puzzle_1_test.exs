@@ -50,4 +50,15 @@ defmodule AdventOfCode2019.Day5Puzzle1Test do
   end
 
 
+  test "opcode 3 and 4 example 1" do
+    initial_program = [3, 0, 4, 0, 99]
+    input = 23
+    inputs = [input]
+    expected_final_program = [input, 0, 4, 0, 99]
+    expected_outputs = inputs
+    expected = {expected_final_program, expected_outputs}
+    assert AdventOfCode2019.Day2Puzzle1.run(initial_program, inputs) == expected
+  end
+
+
 end
