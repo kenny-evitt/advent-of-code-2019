@@ -12,20 +12,40 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
     run(program, inputs, [], 0)
   end
 
+
   @spec run(program, inputs, outputs, non_neg_integer) :: {program, outputs}
   defp run(program, inputs, outputs, current_opcode_index) do
-    run(program, inputs, outputs, current_opcode_index, Enum.at(program, current_opcode_index))
+    {opcode, parameter_modes} =
+      AdventOfCode2019.Day5Puzzle1.parse_instruction(
+        Enum.at(program, current_opcode_index)
+      )
+
+    run(
+      program,
+      inputs,
+      outputs,
+      current_opcode_index,
+      opcode,
+      parameter_modes
+    )
   end
+
 
   @type opcode :: pos_integer
 
+  @type parameter_mode :: AdventOfCode2019.Day5Puzzle1.parameter_mode
 
 
-  @spec run(program, inputs, outputs, non_neg_integer, opcode) :: {program, outputs}
-  defp run(program, inputs, outputs, current_opcode_index, opcode)
+
+  @spec run(program, inputs, outputs, non_neg_integer, opcode, [parameter_mode]) :: {program, outputs}
+  defp run(program, inputs, outputs, current_opcode_index, opcode, parameter_modes)
 
 
-  defp run(program, _inputs, outputs, _current_opcode_index, 99) do
+  # Opcode
+  #
+  #  - 99   Halt
+  #
+  defp run(program, _inputs, outputs, _current_opcode_index, 99, _parameter_modes) do
     {
       program,
       Enum.reverse(outputs)
@@ -33,12 +53,29 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
-  defp run(program, inputs, outputs, current_opcode_index, current_opcode) when current_opcode in [1, 2] do
-    [arg1_index, arg2_index, result_index] =
+  # Opcodes
+  #
+  #  -  1   Add
+  #  -  2   Multiply
+  #
+  defp run(program, inputs, outputs, current_opcode_index, current_opcode, parameter_modes)
+  when current_opcode in [1, 2] do
+    [arg1_mode, arg2_mode, _] = parameter_modes
+
+    [arg1_index_or_value, arg2_index_or_value, result_index] =
       Enum.slice(program, current_opcode_index + 1, 3)
 
-    arg1_value = Enum.at(program, arg1_index)
-    arg2_value = Enum.at(program, arg2_index)
+    arg1_value =
+      case arg1_mode do
+        0 -> Enum.at(program, arg1_index_or_value)
+        1 -> arg1_index_or_value
+      end
+
+    arg2_value =
+      case arg2_mode do
+        0 -> Enum.at(program, arg2_index_or_value)
+        1 -> arg2_index_or_value
+      end
 
     computed_value =
       case current_opcode do
@@ -56,7 +93,11 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
-  defp run(program, [input | inputs_tail], outputs, current_opcode_index, 3) do
+  # Opcode
+  #
+  #  -  3   Input
+  #
+  defp run(program, [input | inputs_tail], outputs, current_opcode_index, 3, _parameter_modes) do
     result_index = Enum.at(program, current_opcode_index + 1)
 
     program
@@ -69,9 +110,19 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
-  defp run(program, inputs, outputs, current_opcode_index, 4) do
-    arg_index = Enum.at(program, current_opcode_index + 1)
-    arg_value = Enum.at(program, arg_index)
+  # Opcode
+  #
+  #  -  4   Output
+  #
+  defp run(program, inputs, outputs, current_opcode_index, 4, parameter_modes) do
+    [arg_mode, _, _] = parameter_modes
+    arg_index_or_value = Enum.at(program, current_opcode_index + 1)
+
+    arg_value =
+      case arg_mode do
+        0 -> Enum.at(program, arg_index_or_value)
+        1 -> arg_index_or_value
+      end
 
     run(
       program,
@@ -82,7 +133,7 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
-  defp run(_program, _inputs, _outputs, _current_opcode_index, _current_opcode) do
+  defp run(_program, _inputs, _outputs, _current_opcode_index, _current_opcode, _parameter_modes) do
     raise("Encountered an unknown opcode; something went wrong.")
   end
 
