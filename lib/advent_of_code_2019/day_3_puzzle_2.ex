@@ -23,7 +23,7 @@ defmodule AdventOfCode2019.Day3Puzzle2 do
   @type signal_delay :: pos_integer
 
 
-  @spec minimal_signal_delay_intersection(panel) :: {position, signal_delay, [{wire_number, step}]}
+  @spec minimal_signal_delay_intersection(panel) :: {position, signal_delay, [{wire_number, step}]} | :no_intersections
   def minimal_signal_delay_intersection(panel) do
     panel.intersections
     |> Enum.map(
