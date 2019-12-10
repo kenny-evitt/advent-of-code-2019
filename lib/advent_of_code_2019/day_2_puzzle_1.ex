@@ -12,19 +12,21 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
     run(program, inputs, [], 0)
   end
 
+  @type pointer :: non_neg_integer
 
-  @spec run(program, inputs, outputs, non_neg_integer) :: {program, outputs}
-  defp run(program, inputs, outputs, current_opcode_index) do
+
+  @spec run(program, inputs, outputs, pointer) :: {program, outputs}
+  defp run(program, inputs, outputs, current_instruction_pointer) do
     {opcode, parameter_modes} =
       AdventOfCode2019.Day5Puzzle1.parse_instruction(
-        Enum.at(program, current_opcode_index)
+        Enum.at(program, current_instruction_pointer)
       )
 
     run(
       program,
       inputs,
       outputs,
-      current_opcode_index,
+      current_instruction_pointer,
       opcode,
       parameter_modes
     )
@@ -36,9 +38,37 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   @type parameter_mode :: AdventOfCode2019.Day5Puzzle1.parameter_mode
 
 
+  @spec instruction_parameter(program, value, parameter_mode) :: value
+  def instruction_parameter(program, parameter_pointer_or_value, parameter_mode)
 
-  @spec run(program, inputs, outputs, non_neg_integer, opcode, [parameter_mode]) :: {program, outputs}
-  defp run(program, inputs, outputs, current_opcode_index, opcode, parameter_modes)
+  def instruction_parameter(program,  pointer, 0), do: Enum.at(program, pointer)
+  def instruction_parameter(_program, value,   1), do: value
+
+
+  @spec instruction_parameters(program, pointer, [parameter_mode]) :: [value]
+  def instruction_parameters(program, instruction_pointer, parameter_modes) do
+    Enum.zip(
+      Enum.slice(
+        program,
+        instruction_pointer + 1,
+        length(parameter_modes)
+      ),
+      parameter_modes
+    )
+    |> Enum.map(
+      fn {pointer_or_value, parameter_mode} ->
+        instruction_parameter(program, pointer_or_value, parameter_mode)
+      end
+    )
+  end
+
+
+
+
+  @spec run(program, inputs, outputs, pointer, opcode, [parameter_mode]) ::
+  {program, outputs} | run_error
+  defp run(program, inputs, outputs, current_instruction_pointer, opcode, parameter_modes)
+
 
 
   # Opcodes
@@ -46,77 +76,195 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   #  -  1   Add
   #  -  2   Multiply
   #
-  defp run(program, inputs, outputs, current_opcode_index, current_opcode, parameter_modes)
-  when current_opcode in [1, 2] do
-    [arg1_mode, arg2_mode, _] = parameter_modes
+  defp run(
+    program,
+    inputs,
+    outputs,
+    current_instruction_pointer,
+    current_opcode,
+    [pm1, pm2, 0]
+  ) when current_opcode in [1, 2] do
 
-    [arg1_index_or_value, arg2_index_or_value, result_index] =
-      Enum.slice(program, current_opcode_index + 1, 3)
-
-    arg1_value =
-      case arg1_mode do
-        0 -> Enum.at(program, arg1_index_or_value)
-        1 -> arg1_index_or_value
-      end
-
-    arg2_value =
-      case arg2_mode do
-        0 -> Enum.at(program, arg2_index_or_value)
-        1 -> arg2_index_or_value
-      end
+    [p1, p2, result_pointer] =
+      instruction_parameters(
+        program,
+        current_instruction_pointer,
+        # Retrieve the third parameter as a pointer, i.e. as-if it was a regular 'immediate mode'
+        # parameter:
+        [pm1, pm2, 1]
+      )
 
     computed_value =
       case current_opcode do
-        1 -> arg1_value + arg2_value
-        2 -> arg1_value * arg2_value
+        1 -> p1 + p2
+        2 -> p1 * p2
       end
 
     program
-    |> List.replace_at(result_index, computed_value)
+    |> List.replace_at(result_pointer, computed_value)
     |> run(
       inputs,
       outputs,
-      current_opcode_index + 4
+      current_instruction_pointer + 4
     )
   end
+
 
 
   # Opcode
   #
   #  -  3   Input
   #
-  defp run(program, [input | inputs_tail], outputs, current_opcode_index, 3, _parameter_modes) do
-    result_index = Enum.at(program, current_opcode_index + 1)
+
+
+  defp run(program, [input | inputs_tail], outputs, current_instruction_pointer, 3, _parameter_modes) do
+    result_pointer = Enum.at(program, current_instruction_pointer + 1)
 
     program
-    |> List.replace_at(result_index, input)
+    |> List.replace_at(result_pointer, input)
     |> run(
       inputs_tail,
       outputs,
-      current_opcode_index + 2
+      current_instruction_pointer + 2
     )
   end
+
+
+  defp run(program, [] = inputs, outputs, current_instruction_pointer, 3 = current_opcode, parameter_modes) do
+    error(
+      "There are no inputs.",
+      program,
+      inputs,
+      outputs,
+      current_instruction_pointer,
+      current_opcode,
+      parameter_modes
+    )
+  end
+
 
 
   # Opcode
   #
   #  -  4   Output
   #
-  defp run(program, inputs, outputs, current_opcode_index, 4, parameter_modes) do
-    [arg_mode, _, _] = parameter_modes
-    arg_index_or_value = Enum.at(program, current_opcode_index + 1)
-
-    arg_value =
-      case arg_mode do
-        0 -> Enum.at(program, arg_index_or_value)
-        1 -> arg_index_or_value
-      end
+  defp run(program, inputs, outputs, current_instruction_pointer, 4, [pm, _, _]) do
+    [parameter] =
+      instruction_parameters(
+        program,
+        current_instruction_pointer,
+        [pm]
+      )
 
     run(
       program,
       inputs,
-      [arg_value | outputs],
-      current_opcode_index + 2
+      [parameter | outputs],
+      current_instruction_pointer + 2
+    )
+  end
+
+
+  # Opcode
+  #
+  #  -  5   Jump-if-true
+  #
+  defp run(program, inputs, outputs, current_instruction_pointer, 5, [pm1, pm2, _]) do
+    [parameter, jump_pointer] =
+      instruction_parameters(
+        program,
+        current_instruction_pointer,
+        [pm1, pm2]
+      )
+
+    next_instruction_pointer =
+      case parameter do
+        0 -> current_instruction_pointer + 3
+        _ -> jump_pointer
+      end
+
+    run(program, inputs, outputs, next_instruction_pointer)
+  end
+
+
+  # Opcode
+  #
+  #  -  6   Jump-if-false
+  #
+  defp run(program, inputs, outputs, current_instruction_pointer, 6, [pm1, pm2, _]) do
+    [parameter, jump_pointer] =
+      instruction_parameters(
+        program,
+        current_instruction_pointer,
+        [pm1, pm2]
+      )
+
+    next_instruction_pointer =
+      case parameter do
+        0 -> jump_pointer
+        _ -> current_instruction_pointer + 3
+      end
+
+    run(program, inputs, outputs, next_instruction_pointer)
+  end
+
+
+  # Opcode
+  #
+  #  -  7   Less-than
+  #
+  defp run(program, inputs, outputs, current_instruction_pointer, 7, [pm1, pm2, 0]) do
+    [p1, p2, result_pointer] =
+      instruction_parameters(
+        program,
+        current_instruction_pointer,
+        # Retrieve the third parameter as a pointer, i.e. as-if it was a regular 'immediate mode'
+        # parameter:
+        [pm1, pm2, 1]
+      )
+
+    computed_value =
+      cond do
+        p1 < p2 -> 1
+        true    -> 0
+      end
+
+    program
+    |> List.replace_at(result_pointer, computed_value)
+    |> run(
+      inputs,
+      outputs,
+      current_instruction_pointer + 4
+    )
+  end
+
+
+  # Opcode
+  #
+  #  -  8   Equals
+  #
+  defp run(program, inputs, outputs, current_instruction_pointer, 8, [pm1, pm2, 0]) do
+    [p1, p2, result_pointer] =
+      instruction_parameters(
+        program,
+        current_instruction_pointer,
+        # Retrieve the third parameter as a pointer, i.e. as-if it was a regular 'immediate mode'
+        # parameter:
+        [pm1, pm2, 1]
+      )
+
+    computed_value =
+      cond do
+        p1 == p2 -> 1
+        true     -> 0
+      end
+
+    program
+    |> List.replace_at(result_pointer, computed_value)
+    |> run(
+      inputs,
+      outputs,
+      current_instruction_pointer + 4
     )
   end
 
@@ -125,7 +273,7 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   #
   #  - 99   Halt
   #
-  defp run(program, _inputs, outputs, _current_opcode_index, 99, _parameter_modes) do
+  defp run(program, _inputs, outputs, _current_instruction_pointer, 99, _parameter_modes) do
     {
       program,
       Enum.reverse(outputs)
@@ -133,11 +281,73 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
-  defp run(_program, _inputs, _outputs, _current_opcode_index, _current_opcode, _parameter_modes) do
-    raise("Encountered an unknown opcode; something went wrong.")
+  defp run(
+    program,
+    inputs,
+    outputs,
+    current_instruction_pointer,
+    current_opcode,
+    [_, _, 1] = parameter_modes
+  ) do
+
+    error(
+      "Invalid parameter 3 mode; parameters that an instruction writes to cannot be in immediate mode.",
+      program,
+      inputs,
+      outputs,
+      current_instruction_pointer,
+      current_opcode,
+      parameter_modes
+    )
   end
 
 
+  defp run(program, inputs, outputs, current_instruction_pointer, current_opcode, parameter_modes) do
+    error(
+      "Encountered an unknown opcode; something went wrong.",
+      program,
+      inputs,
+      outputs,
+      current_instruction_pointer,
+      current_opcode,
+      parameter_modes
+    )
+  end
+
+
+
+
+  @type error_message :: String.t
+
+  @type run_error ::
+  {
+    :error,
+    error_message,
+    %{
+        program:                     program,
+        remaining_inputs:            inputs,
+        outputs:                     outputs,
+        current_instruction_pointer: pointer,
+        current_opcode:              opcode,
+        parameter_modes:             [parameter_mode]
+    }
+  }
+
+  @spec error(error_message, program, inputs, outputs, pointer, opcode, [parameter_mode]) :: run_error
+  def error(message, program, inputs, outputs, current_instruction_pointer, current_opcode, parameter_modes) do
+    {
+      :error,
+      message,
+      %{
+        program:                     program,
+        remaining_inputs:            inputs,
+        outputs:                     outputs,
+        current_instruction_pointer: current_instruction_pointer,
+        current_opcode:              current_opcode,
+        parameter_modes:             parameter_modes
+      }
+    }
+  end
 
   @spec process_input() :: value
   def process_input() do
