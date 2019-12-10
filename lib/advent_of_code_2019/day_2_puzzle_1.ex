@@ -41,18 +41,6 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   defp run(program, inputs, outputs, current_opcode_index, opcode, parameter_modes)
 
 
-  # Opcode
-  #
-  #  - 99   Halt
-  #
-  defp run(program, _inputs, outputs, _current_opcode_index, 99, _parameter_modes) do
-    {
-      program,
-      Enum.reverse(outputs)
-    }
-  end
-
-
   # Opcodes
   #
   #  -  1   Add
@@ -130,6 +118,18 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
       [arg_value | outputs],
       current_opcode_index + 2
     )
+  end
+
+
+  # Opcode
+  #
+  #  - 99   Halt
+  #
+  defp run(program, _inputs, outputs, _current_opcode_index, 99, _parameter_modes) do
+    {
+      program,
+      Enum.reverse(outputs)
+    }
   end
 
 
