@@ -1,5 +1,6 @@
 defmodule AdventOfCode2019.Day5Puzzle2 do
 
+
   def process_input() do
     {:ok, input} = File.read("input/day-5-puzzle-1")
 
@@ -16,5 +17,6 @@ defmodule AdventOfCode2019.Day5Puzzle2 do
 
     diagnostic_code
   end
+
 
 end
