@@ -9,7 +9,9 @@ defmodule AdventOfCode2019.Day6Puzzle1 do
     {captures["a"], captures["b"]}
   end
 
-  @type orbit_map :: %{required(object_name) => [object_name]}
+  @type orbit_children :: %{required(object_name) => [object_name]}
+  @type orbit_parents  :: %{required(object_name) => object_name}
+  @type orbit_map      :: %{children: orbit_children, parents: orbit_parents}
 
   @spec parse_orbit_map(String.t) :: orbit_map
   def parse_orbit_map(orbit_map_string) do
@@ -18,9 +20,19 @@ defmodule AdventOfCode2019.Day6Puzzle1 do
     |> String.split()
     |> Enum.map(&parse_orbit/1)
     |> Enum.reduce(
-      %{},
+      %{children: %{}, parents: %{}},
       fn {object_a, object_b}, map ->
-        Map.update(map, object_a, [object_b], fn list -> [object_b | list] end)
+        map
+        |> update_in(
+          [:children, object_a],
+          fn object_a_children ->
+            case object_a_children do
+              nil  -> [object_b]
+              list -> [object_b | list]
+            end
+          end
+        )
+        |> put_in([:parents, object_b], object_a)
       end
     )
   end
@@ -72,7 +84,7 @@ defmodule AdventOfCode2019.Day6Puzzle1 do
         n   -> n + 1
       end
 
-    case orbit_map[current_object_name] do
+    case orbit_map.children[current_object_name] do
       nil  -> {direct_orbits, indirect_orbits}
 
       list ->

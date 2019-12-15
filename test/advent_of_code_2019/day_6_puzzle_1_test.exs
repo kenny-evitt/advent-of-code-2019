@@ -41,7 +41,7 @@ defmodule AdventOfCode2019.Day6Puzzle1Test do
       K)L
       """
 
-    expected_parse_orbit_map =
+    expected_parsed_orbit_map_children =
       %{
         "COM" => ["B"],
         "B"   => ["G", "C"],
@@ -53,21 +53,24 @@ defmodule AdventOfCode2019.Day6Puzzle1Test do
         "K"   => ["L"]
       }
 
-    assert parse_orbit_map(orbit_map_string) == expected_parse_orbit_map
+    assert parse_orbit_map(orbit_map_string).children == expected_parsed_orbit_map_children
   end
 
 
   test "count orbits example 0" do
     orbit_map =
       %{
-        "COM" => ["B"],
-        "B"   => ["G", "C"],
-        "C"   => ["D"],
-        "D"   => ["I", "E"],
-        "E"   => ["J", "F"],
-        "G"   => ["H"],
-        "J"   => ["K"],
-        "K"   => ["L"]
+        children: %{
+          "COM" => ["B"],
+          "B"   => ["G", "C"],
+          "C"   => ["D"],
+          "D"   => ["I", "E"],
+          "E"   => ["J", "F"],
+          "G"   => ["H"],
+          "J"   => ["K"],
+          "K"   => ["L"]
+        },
+        parents: %{}
       }
 
     assert count_orbits(orbit_map) == {11, 31}
@@ -75,7 +78,7 @@ defmodule AdventOfCode2019.Day6Puzzle1Test do
 
 
   test "count orbits example 1" do
-    orbit_map = %{}
+    orbit_map = %{children: %{}, parents: %{}}
     assert count_orbits(orbit_map) == {0, 0}
   end
 
@@ -83,7 +86,10 @@ defmodule AdventOfCode2019.Day6Puzzle1Test do
   test "count orbits example 2" do
     orbit_map =
       %{
-        "COM" => ["B"]
+        children: %{
+          "COM" => ["B"]
+        },
+        parents: %{}
       }
 
     assert count_orbits(orbit_map) == {1, 0}
