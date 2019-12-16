@@ -12,9 +12,7 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
     {:ok, input} = File.read("input/day-2-puzzle-1")
 
     input
-    |> String.trim_trailing() # Trim, e.g. newline, character(s)
-    |> String.split(",")
-    |> Enum.map(&String.to_integer/1)
+    |> AdventOfCode2019.Day2Puzzle1.parse_program_string()
     |> run(noun, verb)
   end
 
@@ -37,13 +35,8 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
 
   @spec search() :: {noun, verb}
   def search() do
-    {:ok, input} = File.read("input/day-2-puzzle-1")
-
-    initial_program =
-      input
-      |> String.trim_trailing() # Trim, e.g. newline, character(s)
-      |> String.split(",")
-      |> Enum.map(&String.to_integer/1)
+    {:ok, input}    = File.read("input/day-2-puzzle-1")
+    initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
 
     ( for i <- 0..99, j <- 0..99, do: {i, j} )
     |> Enum.find(fn {noun, verb} -> run(initial_program, noun, verb) == 19690720 end)

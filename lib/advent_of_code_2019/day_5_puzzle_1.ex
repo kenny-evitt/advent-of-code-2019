@@ -31,15 +31,9 @@ defmodule AdventOfCode2019.Day5Puzzle1 do
 
   @spec process_input() :: output | {:error, String.t, program, outputs}
   def process_input() do
-    {:ok, input} = File.read("input/day-5-puzzle-1")
-
-    initial_program =
-      input
-      |> String.trim_trailing() # Trim, e.g. newline, character(s)
-      |> String.split(",")
-      |> Enum.map(&String.to_integer/1)
-
-    inputs = [1]
+    {:ok, input}    = File.read("input/day-5-puzzle-1")
+    initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
+    inputs          = [1]
 
     {final_program, outputs} =
       AdventOfCode2019.Day2Puzzle1.run(initial_program, inputs)

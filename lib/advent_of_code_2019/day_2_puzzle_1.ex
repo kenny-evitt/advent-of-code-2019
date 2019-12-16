@@ -354,4 +354,12 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
     AdventOfCode2019.Day2Puzzle2.process_input(12, 2)
   end
 
+  @spec parse_program_string(String.t) :: program
+  def parse_program_string(program_string) do
+    program_string
+    |> String.trim_trailing() # Trim, e.g. newline, character(s)
+    |> String.split(",")
+    |> Enum.map(&String.to_integer/1)
+  end
+
 end
