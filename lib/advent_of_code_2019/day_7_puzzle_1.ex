@@ -31,7 +31,7 @@ defmodule AdventOfCode2019.Day7Puzzle1 do
 
   @spec run_amplifier(program, phase_setting, input) :: output
   def run_amplifier(program, phase_setting, input) do
-    {_final_program, [output]} =
+    {:halted, _final_program, [output]} =
       AdventOfCode2019.Day2Puzzle1.run(program, [phase_setting, input])
 
     output
@@ -41,9 +41,19 @@ defmodule AdventOfCode2019.Day7Puzzle1 do
   @spec phase_setting_list() :: phase_settings
   def phase_setting_list(), do: [0, 1, 2, 3, 4]
 
-
   @spec all_possible_sets_of_phase_settings() :: [phase_settings]
   def all_possible_sets_of_phase_settings() do
+    all_possible_sets_of_phase_settings(
+      phase_setting_list()
+    )
+  end
+
+  @type general_phase_setting  :: input
+  @type general_phase_settings :: [general_phase_setting]
+
+
+  @spec all_possible_sets_of_phase_settings(general_phase_settings) :: [general_phase_settings]
+  def all_possible_sets_of_phase_settings(phase_setting_list) do
     for ia <- 0..4,
         ib <- 0..3,
         ic <- 0..2,
@@ -52,7 +62,7 @@ defmodule AdventOfCode2019.Day7Puzzle1 do
       {[a, b, c, d], [e]} =
         Enum.reduce(
           [ia, ib, ic, id],
-          {[], phase_setting_list()},
+          {[], phase_setting_list},
           fn i, {current_settings, remaining_settings} ->
             {setting, remaining_remaining_settings} = List.pop_at(remaining_settings, i)
             {current_settings ++ [setting], remaining_remaining_settings}
@@ -66,16 +76,34 @@ defmodule AdventOfCode2019.Day7Puzzle1 do
 
   @spec find_phase_settings_with_max_output(program) :: {phase_settings, output}
   def find_phase_settings_with_max_output(program) do
-    [first_set_of_phase_settings | rest_of_set_of_phase_settings] =
-      all_possible_sets_of_phase_settings()
+    find_phase_settings_with_max_output(
+      program,
+      all_possible_sets_of_phase_settings(),
+      &run_amplifiers/2
+    )
+  end
 
-    first_output = run_amplifiers(program, first_set_of_phase_settings)
+  @type run_amplifiers_fn :: (program, general_phase_settings -> output)
+
+
+  @spec find_phase_settings_with_max_output(program, [general_phase_settings], run_amplifiers_fn) ::
+  {general_phase_settings, output}
+  def find_phase_settings_with_max_output(
+    program,
+    all_possible_sets_of_phase_settings,
+    run_amplifiers_fn
+  ) do
+
+    [first_set_of_phase_settings | rest_of_set_of_phase_settings] =
+      all_possible_sets_of_phase_settings
+
+    first_output = run_amplifiers_fn.(program, first_set_of_phase_settings)
 
     Enum.reduce(
       rest_of_set_of_phase_settings,
       {first_set_of_phase_settings, first_output},
       fn phase_settings, {phase_settings_with_max_output, max_output} ->
-        output = run_amplifiers(program, phase_settings)
+        output = run_amplifiers_fn.(program, phase_settings)
 
         if output > max_output do
           {phase_settings, output}
