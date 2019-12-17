@@ -6,17 +6,35 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   @type inputs  :: [input]
   @type output  :: integer
   @type outputs :: [output]
+  @type pointer :: non_neg_integer
 
-  @spec run(program, inputs) :: {program, outputs}
+  @type run_error ::
+  {
+    :error,
+    error_message,
+    %{
+        program:                     program,
+        remaining_inputs:            inputs,
+        outputs:                     outputs,
+        current_instruction_pointer: pointer,
+        current_opcode:              opcode,
+        parameter_modes:             [parameter_mode]
+    }
+  }
+
+  @type run_return ::
+  {:halted, program, outputs}
+  | {:waiting_for_input, program, pointer, outputs}
+  | run_error
+
+  @spec run(program, inputs) :: run_return
   def run(program, inputs \\ []) do
     run(program, inputs, [], 0)
   end
 
-  @type pointer :: non_neg_integer
 
-
-  @spec run(program, inputs, outputs, pointer) :: {program, outputs}
-  defp run(program, inputs, outputs, current_instruction_pointer) do
+  @spec run(program, inputs, outputs, pointer) :: run_return
+  def run(program, inputs, outputs, current_instruction_pointer) do
     {opcode, parameter_modes} =
       AdventOfCode2019.Day5Puzzle1.parse_instruction(
         Enum.at(program, current_instruction_pointer)
@@ -65,8 +83,7 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
 
 
 
-  @spec run(program, inputs, outputs, pointer, opcode, [parameter_mode]) ::
-  {program, outputs} | run_error
+  @spec run(program, inputs, outputs, pointer, opcode, [parameter_mode]) :: run_return
   defp run(program, inputs, outputs, current_instruction_pointer, opcode, parameter_modes)
 
 
@@ -130,16 +147,21 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   end
 
 
-  defp run(program, [] = inputs, outputs, current_instruction_pointer, 3 = current_opcode, parameter_modes) do
-    error(
-      "There are no inputs.",
+  defp run(
+    program,
+    [] = _inputs,
+    outputs,
+    current_instruction_pointer,
+    3 = _current_opcode,
+    _parameter_modes
+  ) do
+
+    {
+      :waiting_for_input,
       program,
-      inputs,
-      outputs,
       current_instruction_pointer,
-      current_opcode,
-      parameter_modes
-    )
+      Enum.reverse(outputs)
+    }
   end
 
 
@@ -275,6 +297,7 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
   #
   defp run(program, _inputs, outputs, _current_instruction_pointer, 99, _parameter_modes) do
     {
+      :halted,
       program,
       Enum.reverse(outputs)
     }
@@ -318,20 +341,6 @@ defmodule AdventOfCode2019.Day2Puzzle1 do
 
 
   @type error_message :: String.t
-
-  @type run_error ::
-  {
-    :error,
-    error_message,
-    %{
-        program:                     program,
-        remaining_inputs:            inputs,
-        outputs:                     outputs,
-        current_instruction_pointer: pointer,
-        current_opcode:              opcode,
-        parameter_modes:             [parameter_mode]
-    }
-  }
 
   @spec error(error_message, program, inputs, outputs, pointer, opcode, [parameter_mode]) :: run_error
   def error(message, program, inputs, outputs, current_instruction_pointer, current_opcode, parameter_modes) do

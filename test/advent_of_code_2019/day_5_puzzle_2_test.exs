@@ -28,7 +28,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]
     inputs = [1]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -36,7 +36,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]
     inputs = [8]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -44,7 +44,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]
     inputs = [11]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -53,7 +53,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1108, -1, 8, 3, 4, 3, 99]
     inputs = [1]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -61,7 +61,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1108, -1, 8, 3, 4, 3, 99]
     inputs = [8]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -69,7 +69,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1108, -1, 8, 3, 4, 3, 99]
     inputs = [11]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -79,7 +79,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]
     inputs = [2]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -87,7 +87,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]
     inputs = [8]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -95,7 +95,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]
     inputs = [13]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -104,7 +104,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1107, -1, 8, 3, 4, 3, 99]
     inputs = [2]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -112,7 +112,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1107, -1, 8, 3, 4, 3, 99]
     inputs = [8]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -120,7 +120,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1107, -1, 8, 3, 4, 3, 99]
     inputs = [13]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -130,7 +130,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9]
     inputs = [0]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -138,7 +138,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9]
     inputs = [-19]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -146,7 +146,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9]
     inputs = [17]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -156,7 +156,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
     inputs = [0]
     expected_outputs = [0]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -164,7 +164,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
     inputs = [-19]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -172,7 +172,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
     program = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
     inputs = [17]
     expected_outputs = [1]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -188,7 +188,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
 
     inputs = [6]
     expected_outputs = [999]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -202,7 +202,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
 
     inputs = [8]
     expected_outputs = [1000]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
@@ -216,7 +216,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
 
     inputs = [29]
     expected_outputs = [1001]
-    {_, actual_outputs} = run(program, inputs)
+    {:halted, _, actual_outputs} = run(program, inputs)
     assert actual_outputs == expected_outputs
   end
 
