@@ -13,10 +13,20 @@ defmodule AdventOfCode2019.Day8Puzzle1 do
     |> String.trim_trailing() # Trim, e.g. newline, character(s)
     |> String.split("", trim: true)
     |> Enum.map(&String.to_integer/1)
-    |> Enum.chunk_every(width * height)
-    |> Enum.map(fn layer -> Enum.chunk_every(layer, width) end)
+    |> chunk_layers(width * height)
+    |> Enum.map(&(chunk_rows(&1, width)))
   end
 
+
+  @spec chunk_layers([image_pixel], pos_integer) :: [[image_pixel]]
+  def chunk_layers(pixels, pixels_per_layer) do
+    Enum.chunk_every(pixels, pixels_per_layer)
+  end
+
+  @spec chunk_rows([image_pixel], pos_integer) :: image_layer
+  def chunk_rows(pixels, pixels_per_row) do
+    Enum.chunk_every(pixels, pixels_per_row)
+  end
 
   @type flattened_layer :: [image_pixel]
 
