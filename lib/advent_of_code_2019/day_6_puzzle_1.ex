@@ -65,7 +65,7 @@ defmodule AdventOfCode2019.Day6Puzzle1 do
   end
 
 
-  @spec count_orbits(orbit_map, object_name, orbit_count) :: orbit_counts
+  @spec count_orbits(orbit_map, object_name, orbit_count | nil) :: orbit_counts
   def count_orbits(
     orbit_map,
     current_object_name,

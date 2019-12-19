@@ -5,9 +5,10 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
 
   # Because `import` doesn't 'import' types:
   @type program :: AdventOfCode2019.Day2Puzzle1.program
+  @type value :: AdventOfCode2019.Day2Puzzle1.value
 
 
-  @spec process_input(noun, verb) :: program
+  @spec process_input(noun, verb) :: value
   def process_input(noun, verb) do
     {:ok, input} = File.read("input/day-2-puzzle-1")
 
@@ -15,10 +16,6 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
     |> AdventOfCode2019.Day2Puzzle1.parse_program_string()
     |> run(noun, verb)
   end
-
-
-  # Because `import` doesn't 'import' types:
-  @type value :: AdventOfCode2019.Day2Puzzle1.value
 
 
   @spec run(program, noun, verb) :: value

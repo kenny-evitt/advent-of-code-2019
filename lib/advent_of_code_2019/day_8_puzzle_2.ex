@@ -39,7 +39,7 @@ defmodule AdventOfCode2019.Day8Puzzle2 do
 
   @type row :: AdventOfCode2019.Day8Puzzle1.image_layer_row
 
-  @spec row_to_strings(row) :: String.t
+  @spec row_to_strings(row) :: [String.t]
   def row_to_strings(row) do
     Enum.map(
       row,
