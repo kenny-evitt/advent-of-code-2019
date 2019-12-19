@@ -19,7 +19,8 @@ defmodule AdventOfCode2019.MixProject do
 
   defp deps do
     [
-      {:ex_parameterized, "~> 1.3.6"}
+      {:ex_parameterized, "~> 1.3.6"},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 end
