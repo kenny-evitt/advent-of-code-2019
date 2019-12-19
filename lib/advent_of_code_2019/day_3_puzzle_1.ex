@@ -106,6 +106,7 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
   end
 
 
+  @spec show(String.t) :: :ok
   def show(front_panel_drawing) do
     Enum.each(front_panel_drawing, &IO.puts/1)
   end
