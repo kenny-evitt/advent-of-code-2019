@@ -59,7 +59,7 @@ defmodule AdventOfCode2019.Day3Puzzle2Test do
   # This doesn't compile; see:
   #
   #  - ["invalid quoted expression" compile error for a tuple value containing a list · Issue #35 · KazuCocoa/ex_parameterized](https://github.com/KazuCocoa/ex_parameterized/issues/35)
-
+  #
   _ = """
   test_with_params "find intersection with minimal signal delay",
     fn raw_wires, expected_intersection_and_wire_steps ->
@@ -92,5 +92,10 @@ defmodule AdventOfCode2019.Day3Puzzle2Test do
       ]
   end
   """
+
+
+  test "output answer" do
+    assert AdventOfCode2019.Day3Puzzle2.output_answer() == 10554
+  end
 
 end

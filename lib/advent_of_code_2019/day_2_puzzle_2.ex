@@ -23,7 +23,7 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
 
   @spec run(program, noun, verb) :: value
   def run(program, noun, verb) do
-    {final_program, _outputs} =
+    {:halted, final_program, _outputs} =
       program
       |> List.replace_at(1, noun)
       |> List.replace_at(2, verb)

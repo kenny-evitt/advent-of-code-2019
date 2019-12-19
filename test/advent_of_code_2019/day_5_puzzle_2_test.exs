@@ -236,7 +236,7 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
   #    test/advent_of_code_2019/day_5_puzzle_2_test.exs:26: anonymous fn/3 in AdventOfCode2019.Day5Puzzle2Test."test 'retrieve instruction parameters': number of 0"/1
   #    test/advent_of_code_2019/day_5_puzzle_2_test.exs:22: (test)
   # ```
-
+  #
   _ = """
   test_with_params "retrieve instruction parameters",
     fn program, instruction_pointer, expected_parameters ->
@@ -254,5 +254,10 @@ defmodule AdventOfCode2019.Day5Puzzle2Test do
   end
   """
 
+
+
+  test "process input" do
+    assert AdventOfCode2019.Day5Puzzle2.process_input() == 11189491
+  end
 
 end

@@ -52,4 +52,8 @@ defmodule AdventOfCode2019.Day7Puzzle1Test do
       ]
   end
 
+  test "process input" do
+    assert process_input() == 199988
+  end
+
 end

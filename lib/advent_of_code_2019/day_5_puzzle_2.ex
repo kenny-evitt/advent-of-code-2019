@@ -6,7 +6,7 @@ defmodule AdventOfCode2019.Day5Puzzle2 do
     initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
     inputs          = [5]
 
-    {_final_program, [diagnostic_code]} =
+    {:halted, _final_program, [diagnostic_code]} =
       AdventOfCode2019.Day2Puzzle1.run(initial_program, inputs)
 
     diagnostic_code

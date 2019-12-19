@@ -223,4 +223,8 @@ defmodule AdventOfCode2019.Day6Puzzle2Test do
     assert minimum_number_of_orbit_transfers(context[:orbit_map], "YOU", "SAN") == 4
   end
 
+  test "process input" do
+    assert process_input() == 352
+  end
+
 end

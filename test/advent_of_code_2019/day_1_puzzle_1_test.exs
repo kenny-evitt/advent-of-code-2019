@@ -17,4 +17,9 @@ defmodule AdventOfCode2019.Day1Puzzle1Test do
   test "example 4" do
     assert module_fuel_required(100756) == 33583
   end
+
+  test "process input" do
+    assert process_input() == 3381405
+  end
+
 end

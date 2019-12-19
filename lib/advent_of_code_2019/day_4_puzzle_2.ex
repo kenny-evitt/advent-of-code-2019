@@ -40,4 +40,11 @@ defmodule AdventOfCode2019.Day4Puzzle2 do
     )
   end
 
+  @spec output_answer(%Range{}) :: non_neg_integer
+  def output_answer(first..last) do
+    length(
+      process_input(first..last)
+    )
+  end
+
 end

@@ -157,4 +157,8 @@ defmodule AdventOfCode2019.Day8Puzzle1Test do
   end
   """
 
+  test "process input" do
+    assert process_input() == 1920
+  end
+
 end

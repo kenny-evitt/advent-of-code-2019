@@ -634,4 +634,8 @@ defmodule AdventOfCode2019.Day3Puzzle1Test do
   end
 
 
+  test "output answer" do
+    assert output_answer() == 280
+  end
+
 end

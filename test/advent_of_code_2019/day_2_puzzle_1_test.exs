@@ -36,4 +36,9 @@ defmodule AdventOfCode2019.Day2Puzzle1Test do
     {:halted, actual_final_program, _} = run(initial_program)
     assert actual_final_program == expected_final_program
   end
+
+  test "process input" do
+    assert process_input() == 5110675
+  end
+
 end

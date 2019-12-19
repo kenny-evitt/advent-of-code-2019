@@ -93,4 +93,8 @@ defmodule AdventOfCode2019.Day5Puzzle1Test do
     assert actual_final_program == expected_final_program
   end
 
+  test "process input" do
+    assert process_input() == 13978427
+  end
+
 end

@@ -35,7 +35,7 @@ defmodule AdventOfCode2019.Day5Puzzle1 do
     initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
     inputs          = [1]
 
-    {final_program, outputs} =
+    {:halted, final_program, outputs} =
       AdventOfCode2019.Day2Puzzle1.run(initial_program, inputs)
 
     test_results = Enum.drop(outputs, -1)

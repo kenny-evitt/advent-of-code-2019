@@ -21,4 +21,8 @@ defmodule AdventOfCode2019.Day4Puzzle2Test do
       ]
   end
 
+  test "output answer" do
+    assert output_answer(235741..706948) == 763
+  end
+
 end
