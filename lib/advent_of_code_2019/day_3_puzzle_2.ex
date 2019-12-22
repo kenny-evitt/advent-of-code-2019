@@ -17,8 +17,8 @@ defmodule AdventOfCode2019.Day3Puzzle2 do
   end
 
   # Because `import` doesn't 'import' types:
-  @type position    :: AdventOfCode2019.Day3Puzzle1.position
-  @type panel       :: AdventOfCode2019.Day3Puzzle1.panel
+  @type position :: AdventOfCode2019.Day3Puzzle1.position
+  @type panel    :: AdventOfCode2019.Day3Puzzle1.panel
 
   @type signal_delay :: pos_integer
 
