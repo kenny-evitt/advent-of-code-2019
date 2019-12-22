@@ -5,7 +5,7 @@ defmodule AdventOfCode2019.Day5Puzzle1 do
 
   @type digit          :: 0..9
   @type digits         :: [digit]
-  @type parameter_mode :: 0 | 1
+  @type parameter_mode :: 0 | 1 | 2
 
 
   @spec parse_instruction(value | digits) :: {opcode, [parameter_mode]}

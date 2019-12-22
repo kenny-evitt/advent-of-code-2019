@@ -99,14 +99,15 @@ defmodule AdventOfCode2019.Day7Puzzle2 do
         program,
         inputs,
         [],
-        pointer
+        pointer,
+        0
       )
 
     case run_return do
-      {:halted, program, outputs}                           ->
+      {:halted, program, outputs}                                     ->
         { {:halted,            program, nil    }, outputs }
 
-      {:waiting_for_input, program, pointer, outputs}       ->
+      {:waiting_for_input, program, pointer, outputs, _relative_base} ->
         { {:waiting_for_input, program, pointer}, outputs }
     end
   end

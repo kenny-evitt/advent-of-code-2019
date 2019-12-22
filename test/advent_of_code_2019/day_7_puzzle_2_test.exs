@@ -6,7 +6,7 @@ defmodule AdventOfCode2019.Day7Puzzle2Test do
   test "program halts for input instruction and no inputs" do
     program_string = "3,3,99,0"
     program = AdventOfCode2019.Day2Puzzle1.parse_program_string(program_string)
-    assert AdventOfCode2019.Day2Puzzle1.run(program, []) == {:waiting_for_input, program, 0, []}
+    assert AdventOfCode2019.Day2Puzzle1.run(program, []) == {:waiting_for_input, program, 0, [], 0}
   end
 
   test_with_params "run amplifiers",

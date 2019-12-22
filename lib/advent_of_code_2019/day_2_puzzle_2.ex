@@ -1,5 +1,7 @@
 defmodule AdventOfCode2019.Day2Puzzle2 do
 
+  alias AdventOfCode2019.IntcodeComputerProgram
+
   @type noun :: integer
   @type verb :: integer
 
@@ -22,11 +24,11 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
   def run(program, noun, verb) do
     {:halted, final_program, _outputs} =
       program
-      |> List.replace_at(1, noun)
-      |> List.replace_at(2, verb)
+      |> IntcodeComputerProgram.update_at(1, noun)
+      |> IntcodeComputerProgram.update_at(2, verb)
       |> AdventOfCode2019.Day2Puzzle1.run()
 
-    hd(final_program)
+    IntcodeComputerProgram.at(final_program, 0)
   end
 
 
