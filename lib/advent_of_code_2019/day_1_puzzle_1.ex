@@ -5,7 +5,7 @@ defmodule AdventOfCode2019.Day1Puzzle1 do
 
 
   def process_input() do
-    {:ok, input} = File.read("input/day-1-puzzle-1")
+    {:ok, input} = File.read("input/day-1")
 
     input
     |> String.split()

@@ -356,7 +356,7 @@ defmodule AdventOfCode2019.Day3Puzzle1 do
 
 
   def input_panel() do
-    {:ok, input} = File.read("input/day-3-puzzle-1")
+    {:ok, input} = File.read("input/day-3")
 
     input
     |> String.split()

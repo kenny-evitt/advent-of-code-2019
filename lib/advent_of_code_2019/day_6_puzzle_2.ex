@@ -97,7 +97,7 @@ defmodule AdventOfCode2019.Day6Puzzle2 do
 
   @spec process_input() :: orbit_count
   def process_input() do
-    {:ok, input} = File.read("input/day-6-puzzle-1")
+    {:ok, input} = File.read("input/day-6")
 
     input
     |> AdventOfCode2019.Day6Puzzle1.parse_orbit_map()

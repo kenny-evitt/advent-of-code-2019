@@ -46,7 +46,7 @@ defmodule AdventOfCode2019.Day8Puzzle1 do
 
   @spec process_input() :: pos_integer
   def process_input() do
-    {:ok, input} = File.read("input/day-8-puzzle-1")
+    {:ok, input} = File.read("input/day-8")
     image = parse_image_data(input, 25, 6)
 
     flattened_layer_with_fewest_zero_pixels =

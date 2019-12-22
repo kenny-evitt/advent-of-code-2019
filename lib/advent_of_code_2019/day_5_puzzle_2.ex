@@ -2,7 +2,7 @@ defmodule AdventOfCode2019.Day5Puzzle2 do
 
 
   def process_input() do
-    {:ok, input}    = File.read("input/day-5-puzzle-1")
+    {:ok, input}    = File.read("input/day-5")
     initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
     inputs          = [5]
 

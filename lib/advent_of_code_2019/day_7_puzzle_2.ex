@@ -160,7 +160,7 @@ defmodule AdventOfCode2019.Day7Puzzle2 do
 
   @spec process_input() :: output
   def process_input() do
-    {:ok, input} = File.read("input/day-7-puzzle-1")
+    {:ok, input} = File.read("input/day-7")
     program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
     {_, output} = find_phase_settings_with_max_output(program)
     output

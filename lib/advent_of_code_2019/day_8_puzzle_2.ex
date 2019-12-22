@@ -55,7 +55,7 @@ defmodule AdventOfCode2019.Day8Puzzle2 do
 
   @spec process_input() :: :ok
   def process_input() do
-    {:ok, input} = File.read("input/day-8-puzzle-1")
+    {:ok, input} = File.read("input/day-8")
 
     input
     |> AdventOfCode2019.Day8Puzzle1.parse_image_data(25, 6)

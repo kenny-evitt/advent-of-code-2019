@@ -10,7 +10,7 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
 
   @spec process_input(noun, verb) :: value
   def process_input(noun, verb) do
-    {:ok, input} = File.read("input/day-2-puzzle-1")
+    {:ok, input} = File.read("input/day-2")
 
     input
     |> AdventOfCode2019.Day2Puzzle1.parse_program_string()
@@ -32,7 +32,7 @@ defmodule AdventOfCode2019.Day2Puzzle2 do
 
   @spec search() :: {noun, verb}
   def search() do
-    {:ok, input}    = File.read("input/day-2-puzzle-1")
+    {:ok, input}    = File.read("input/day-2")
     initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
 
     ( for i <- 0..99, j <- 0..99, do: {i, j} )

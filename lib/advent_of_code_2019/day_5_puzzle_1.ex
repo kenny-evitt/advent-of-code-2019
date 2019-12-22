@@ -31,7 +31,7 @@ defmodule AdventOfCode2019.Day5Puzzle1 do
 
   @spec process_input() :: output | {:error, String.t, program, outputs}
   def process_input() do
-    {:ok, input}    = File.read("input/day-5-puzzle-1")
+    {:ok, input}    = File.read("input/day-5")
     initial_program = AdventOfCode2019.Day2Puzzle1.parse_program_string(input)
     inputs          = [1]
 
