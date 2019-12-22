@@ -4,17 +4,22 @@ defmodule AdventOfCode2019.Day9Puzzle1 do
 
   @type relative_base :: value
 
+  @spec run_boost_program(value) :: value
+  def run_boost_program(input) do
+    {:ok, boost_program_input} = File.read("input/day-9")
+
+    {:halted, _, [output]} =
+      boost_program_input
+      |> AdventOfCode2019.Day2Puzzle1.parse_program_string()
+      |> AdventOfCode2019.Day2Puzzle1.run([input])
+
+    output
+  end
+
 
   @spec process_input() :: value
   def process_input() do
-    {:ok, input} = File.read("input/day-9")
-
-    {:halted, _, [output]} =
-      input
-      |> AdventOfCode2019.Day2Puzzle1.parse_program_string()
-      |> AdventOfCode2019.Day2Puzzle1.run([1])
-
-    output
+    run_boost_program(1)
   end
 
 
