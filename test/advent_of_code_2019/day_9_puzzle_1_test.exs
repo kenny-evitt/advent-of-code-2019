@@ -1,6 +1,5 @@
 defmodule AdventOfCode2019.Day9Puzzle1Test do
   use ExUnit.Case
-  use ExUnit.Parameterized
   alias AdventOfCode2019.IntcodeComputerProgram
 
 
